@@ -31,3 +31,29 @@ build/
 
 ### VS Code ###
 .vscode/
+# Maven target directory
+
+
+# IDE files
+.idea/
+
+*.class
+
+# Git
+.git
+.gitignore
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+
+# Node-related (if you have frontend inside)
+node_modules/
+dist/
