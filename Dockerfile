@@ -1,10 +1,11 @@
-# Step 1: Use Maven to build the JAR
-FROM maven:3.9.4-eclipse-temurin-17 AS build
+# Stage 1: Build the application
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
-COPY main/java/com/example/service_marketplace .
+COPY pom.xml .
+COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Step 2: Run the Spring Boot JAR
+# Stage 2: Run the application
 FROM eclipse-temurin:17-jdk
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
