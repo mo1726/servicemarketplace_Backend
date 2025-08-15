@@ -97,17 +97,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of(
-                "https://sienna-salamander-601714.hostingersite.com", // production
-                "http://localhost:5173" // dev
-        ));
+        cfg.addAllowedOriginPattern("*"); // 🔓 TEMP for testing — allow all origins
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
         cfg.setAllowCredentials(true);
-        cfg.setMaxAge(3600L); // 1 hour
+        cfg.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", cfg);
         return source;
     }
+
 }
