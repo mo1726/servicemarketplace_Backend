@@ -15,7 +15,7 @@ FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
 # Copy only the JAR from the build stage
-COPY --from=build /app/target/*.jar service-marketplace-0.0.1-SNAPSHOT.jar
+COPY --from=build /app/target/*.jar app.jar
 
 # Set environment variables (optional, good for Docker secrets)
 ENV JAVA_OPTS="-Xms256m -Xmx512m"
@@ -23,4 +23,4 @@ ENV JAVA_OPTS="-Xms256m -Xmx512m"
 EXPOSE 8080
 
 # Run the application
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar service-marketplace-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

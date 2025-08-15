@@ -14,7 +14,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173","https://sienna-salamander-601714.hostingersite.com/")
+                        .allowedOrigins("https://sienna-salamander-601714.hostingersite.com")
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .allowCredentials(true);
