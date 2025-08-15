@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.*;
 import java.text.Normalizer;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -64,11 +65,13 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public List<ServiceDto> getAllServices() {
-        return serviceRepository.findAll()
+        LocalDate today = LocalDate.now();
+        return serviceRepository.findAllSortedForBrowse(today)
                 .stream()
                 .map(serviceMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
+
 
     @Override
     public List<ServiceDto> getServicesByProvider(Long providerId) {

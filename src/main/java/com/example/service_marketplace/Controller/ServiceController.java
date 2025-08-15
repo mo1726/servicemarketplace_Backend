@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -26,28 +27,44 @@ import java.util.List;
 public class ServiceController {
 
     private final ServiceService serviceService;
-    private final ServiceRepository  serviceRepository;
-    private final  ServiceMapper serviceMapper;
+    private final ServiceRepository serviceRepository;
+    private final ServiceMapper serviceMapper;
 
+    // Create service
     @PostMapping
     public ResponseEntity<ServiceDto> create(@Valid @RequestBody ServiceDto dto) {
         return ResponseEntity.ok(serviceService.createService(dto));
     }
 
+    // Get all services
     @GetMapping
     public ResponseEntity<List<ServiceDto>> getAll() {
         return ResponseEntity.ok(serviceService.getAllServices());
     }
 
+
+    // Get service by ID
     @GetMapping("/{id}")
     public ResponseEntity<ServiceDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(serviceService.getServiceById(id));
     }
 
+    // Get services by provider
     @GetMapping("/provider/{providerId}")
     public ResponseEntity<List<ServiceDto>> getByProvider(@PathVariable Long providerId) {
         return ResponseEntity.ok(serviceService.getServicesByProvider(providerId));
     }
+
+    // List active ads
+    @GetMapping("/ads")
+    public ResponseEntity<List<Service>> listActiveAds() {
+        LocalDate now = LocalDate.now();
+        List<Service> ads = serviceRepository
+                .findByAdActiveTrueAndAdStartDateLessThanEqualAndAdEndDateGreaterThanEqualOrderByAdPriorityDescAdStartDateDesc(now, now);
+        return ResponseEntity.ok(ads);
+    }
+
+    // Filter services
     @GetMapping("/filter")
     public ResponseEntity<List<ServiceDto>> filterServices(
             @RequestParam(required = false) String title,
@@ -55,39 +72,22 @@ public class ServiceController {
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) Double minRating,
             @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) String categoryName // optional, if you want to support both
+            @RequestParam(required = false) String categoryName
     ) {
-        // Optional: map name -> id if only name provided
-        if (categoryId == null && categoryName != null && !categoryName.isBlank()) {
-            // Example if you add this repo method: categoryRepository.findByNameIgnoreCase(...)
-            // Long id = categoryRepository.findByNameIgnoreCase(categoryName.trim())
-            //        .map(Category::getId).orElse(null);
-            // categoryId = id;
-        }
-
+        // If only categoryName is provided, you could resolve it to ID here (future feature)
         return ResponseEntity.ok(
                 serviceService.filterServices(title, location, maxPrice, minRating, categoryId)
         );
     }
 
-
-
-
-
+    // Update service
     @PutMapping("/{id}")
     public ResponseEntity<ServiceDto> update(@PathVariable Long id, @Valid @RequestBody ServiceDto dto) {
         return ResponseEntity.ok(serviceService.updateService(id, dto));
     }
-    @PutMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ServiceDto uploadImage(
-            @PathVariable Long id,
-            @RequestPart("file") MultipartFile file
-    ) {
-        return serviceService.updateImage(id, file);
-    }
 
-    // ServiceController.java (snippet)
-    @PutMapping(value = "/services/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    // Upload service image (API: /services/{id}/image)
+    @PutMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ServiceDto uploadServiceImage(
             @PathVariable Long id,
             @RequestPart("file") MultipartFile file) throws IOException {
@@ -106,8 +106,7 @@ public class ServiceController {
         return serviceMapper.toDto(service);
     }
 
-
-
+    // Delete service
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         serviceService.deleteService(id);
